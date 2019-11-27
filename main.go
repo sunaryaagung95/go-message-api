@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+
 	fmt.Println("GO Docker Tutorial")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
