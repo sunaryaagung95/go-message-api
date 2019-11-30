@@ -1,39 +1,34 @@
-# Dockerfile References: https://docs.docker.com/engine/reference/builder/
+# Use the official Golang image to create a build artifact.
+# This is based on Debian and sets the GOPATH to /go.
+# https://hub.docker.com/_/golang
+FROM golang:1.13 as builder
 
-# Start from the latest golang base image
-FROM golang:latest as builder
-
-# Add Maintainer Info
-LABEL maintainer="Arya <sunaryaagung95@gmail.com>"
-
-# Set the Current Working Directory inside the container
+# Create and change to the app directory.
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Retrieve application dependencies.
+# This allows the container build to reuse cached dependencies.
+COPY go.* ./
 RUN go mod download
 
-# Copy the source from the current directory to the Working Directory inside the container
-COPY . .
+# Copy local code to the container image.
+COPY . ./
 
-# Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+# Build the binary.
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=readonly -v -o server
 
+# Use the official Alpine image for a lean production container.
+# https://hub.docker.com/_/alpine
+# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
+FROM alpine:3
+RUN apk add --no-cache ca-certificates
 
-######## Start a new stage from scratch #######
-FROM alpine:latest  
-
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
-
-# Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main .
+# Copy the binary to the production image from the builder stage.
+COPY --from=builder /app/server /server
+COPY --from=builder /app/.env .
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
-# Command to run the executable
-CMD ["./main"] 
+# Run the web service on container startup.
+CMD ["/server"]
