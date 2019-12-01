@@ -102,7 +102,7 @@ func (u *User) GetOneUser(db *gorm.DB, uid int) (*User, error) {
 
 //DeteleUser func
 func (u *User) DeteleUser(db *gorm.DB, uid int) (int64, error) {
-	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
+	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Unscoped().Delete(&User{})
 	if db.Error != nil {
 		return 0, db.Error
 	}

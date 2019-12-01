@@ -35,7 +35,7 @@ func (server *Server) ConnectDB(dbHost, dbPort, dbUser, dbName, dbPassword strin
 		log.Fatal("Error:", err)
 	}
 	fmt.Println("Connected to db:", dbName)
-	server.DB.Debug().AutoMigrate(models.User{})
+	server.DB.Debug().AutoMigrate(models.User{}, models.Room{}, models.Member{}, models.Message{})
 	server.Router = mux.NewRouter()
 	server.RunRouters()
 }
@@ -44,7 +44,7 @@ func (server *Server) ConnectDB(dbHost, dbPort, dbUser, dbName, dbPassword strin
 func (server *Server) Serve(addr string) {
 	headers := handlers.AllowedHeaders([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
-	origins := handlers.AllowedMethods([]string{"*"})
+	origins := handlers.AllowedOrigins([]string{"*"})
 	fmt.Println("Listening to Port: 8080")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(server.Router)))
 }
