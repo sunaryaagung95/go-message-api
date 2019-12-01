@@ -26,5 +26,10 @@ func main() {
 		"messenger",
 		os.Getenv("DB_PASSWORD"),
 	)
-	server.Serve(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("Listening on localhost:%s", port)
+	server.Serve(fmt.Sprintf(":%s", port))
 }

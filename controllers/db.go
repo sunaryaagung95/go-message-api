@@ -45,6 +45,5 @@ func (server *Server) Serve(addr string) {
 	headers := handlers.AllowedHeaders([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
 	origins := handlers.AllowedOrigins([]string{"*"})
-	fmt.Println("Listening to Port: 8080")
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(server.Router)))
+	log.Fatal(http.ListenAndServe(addr, handlers.CORS(headers, methods, origins)(server.Router)))
 }
