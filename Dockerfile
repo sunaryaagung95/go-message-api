@@ -25,7 +25,6 @@ RUN apk add --no-cache ca-certificates
 
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/server /server
-COPY --from=builder /app/.env .
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
