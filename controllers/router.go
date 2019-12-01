@@ -15,13 +15,13 @@ func (s *Server) RunRouters() {
 	s.Router.HandleFunc("/api/users/{id}", middlewares.SetJSON(s.GetOneUser)).Methods("GET")
 	s.Router.HandleFunc("/api/users", middlewares.SetJSON(s.AddUser)).Methods("POST")
 	s.Router.HandleFunc("/api/users/{id}", middlewares.SetAuth(middlewares.SetJSON(s.UpdateUser))).Methods("PUT")
-	s.Router.HandleFunc("/api/users/{id}", middlewares.SetAuth(s.DeleteUser)).Methods("DELETE")
+	s.Router.HandleFunc("/api/users/{id}", middlewares.SetAuth(middlewares.SetJSON(s.DeleteUser))).Methods("DELETE")
 
 	// Room router
 	s.Router.HandleFunc("/api/rooms", middlewares.SetAuth(middlewares.SetJSON(s.GetAllRoom))).Methods("GET")
 	s.Router.HandleFunc("/api/rooms/{id}", middlewares.SetAuth(middlewares.SetJSON(s.GetOneRoom))).Methods("GET")
 	s.Router.HandleFunc("/api/rooms", middlewares.SetAuth(middlewares.SetJSON(s.CreateRoom))).Methods("POST")
-	s.Router.HandleFunc("/api/rooms/{id}", middlewares.SetAuth(s.DeleteRoom)).Methods("DELETE")
+	s.Router.HandleFunc("/api/rooms/{id}", middlewares.SetAuth(middlewares.SetJSON(s.DeleteRoom))).Methods("DELETE")
 
 	// Member Router
 	s.Router.HandleFunc("/api/members/{id}", middlewares.SetAuth(middlewares.SetJSON(s.GetMember))).Methods("GET")
@@ -30,6 +30,6 @@ func (s *Server) RunRouters() {
 	// Message Router
 	s.Router.HandleFunc("/api/messages/{id}", middlewares.SetAuth(middlewares.SetJSON(s.GetMessage))).Methods("GET")
 	s.Router.HandleFunc("/api/messages", middlewares.SetAuth(middlewares.SetJSON(s.CreateMessage))).Methods("POST")
-	s.Router.HandleFunc("/api/messages/{id}", middlewares.SetAuth(s.DeleteMessage)).Methods("DELETE")
+	s.Router.HandleFunc("/api/messages/{id}", middlewares.SetAuth(middlewares.SetJSON(s.DeleteMessage))).Methods("DELETE")
 
 }

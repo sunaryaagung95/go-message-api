@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/sunaryaagung95/go-message-api/auth"
 	"github.com/sunaryaagung95/go-message-api/models"
 	"github.com/sunaryaagung95/go-message-api/responses"
 )
@@ -25,6 +26,14 @@ func (server *Server) CreateMessage(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+	senderID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	message.SenderID = senderID
+
+	message.Prepare()
 	messageCreated, err := message.CreateMessage(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

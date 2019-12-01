@@ -25,6 +25,7 @@ func (server *Server) AddMember(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+	member.Prepare()
 	memberAdded, err := member.AddMember(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

@@ -2,14 +2,24 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
 
 // Room model
 type Room struct {
-	gorm.Model
-	AdminID int `gorm:"not null;" json:"admin_id"`
+	ID        int       `gorm:"primary_key;auto_increment;" json:"id"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	AdminID   int       `gorm:"not null;" json:"admin_id"`
+}
+
+// Prepare user model
+func (r *Room) Prepare() {
+	r.ID = 0
+	r.CreatedAt = time.Now()
+	r.UpdatedAt = time.Now()
 }
 
 // CreateRoom func

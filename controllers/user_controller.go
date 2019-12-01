@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sunaryaagung95/go-message-api/models"
@@ -34,6 +35,7 @@ func (server *Server) GetOneUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := models.User{}
+
 	userGotten, err := user.GetOneUser(server.DB, int(uid))
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
@@ -55,6 +57,7 @@ func (server *Server) AddUser(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+	user.Prepare()
 	err = user.Validate("add")
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -108,6 +111,7 @@ func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(err)
+	user.UpdatedAt = time.Now()
 	err = user.Validate("update")
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)

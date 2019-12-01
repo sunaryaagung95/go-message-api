@@ -1,12 +1,25 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"time"
+
+	"github.com/jinzhu/gorm"
+)
 
 // Member model
 type Member struct {
-	gorm.Model
-	RoomID int `gorm:"not null;" json:"room_id"`
-	UserID int `gorm:"not null;" json:"user_id"`
+	ID        int       `gorm:"primary_key;auto_increment;" json:"id"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	RoomID    int       `gorm:"not null;" json:"room_id"`
+	UserID    int       `gorm:"not null;" json:"user_id"`
+}
+
+// Prepare user model
+func (m *Member) Prepare() {
+	m.ID = 0
+	m.CreatedAt = time.Now()
+	m.UpdatedAt = time.Now()
 }
 
 // AddMember to room

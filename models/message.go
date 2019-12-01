@@ -1,13 +1,26 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"time"
+
+	"github.com/jinzhu/gorm"
+)
 
 // Message model
 type Message struct {
-	gorm.Model
-	SenderID int    `gorm:"not null;" json:"sender_id"`
-	RoomID   int    `gormL:"not null;" json:"room_id"`
-	Content  string `gorm:"size:300;" json:"content"`
+	ID        int       `gorm:"primary_key;auto_increment;" json:"id"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	SenderID  int       `gorm:"not null;" json:"sender_id"`
+	RoomID    int       `gormL:"not null;" json:"room_id"`
+	Content   string    `gorm:"size:300;" json:"content"`
+}
+
+// Prepare user model
+func (m *Message) Prepare() {
+	m.ID = 0
+	m.CreatedAt = time.Now()
+	m.UpdatedAt = time.Now()
 }
 
 // CreateMessage func

@@ -2,7 +2,9 @@ package models
 
 import (
 	"errors"
+	"html"
 	"strings"
+	"time"
 
 	"github.com/badoux/checkmail"
 	"github.com/jinzhu/gorm"
@@ -11,10 +13,21 @@ import (
 
 //User model
 type User struct {
-	gorm.Model
-	Name     string `gorm:"size:100;not null;" json:"name"`
-	Email    string `gorm:"size:100;not_null;unique_index" json:"email"`
-	Password string `gorm:"size:100;not null" json:"password"`
+	ID        int       `gorm:"primary_key;auto_increment;" json:"id"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	Name      string    `gorm:"size:100;not null;" json:"name"`
+	Email     string    `gorm:"size:100;not null;unique_index" json:"email"`
+	Password  string    `gorm:"size:100;not null" json:"password"`
+}
+
+// Prepare user model
+func (u *User) Prepare() {
+	u.ID = 0
+	u.Name = html.EscapeString(strings.TrimSpace(u.Name))
+	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
+	u.CreatedAt = time.Now()
+	u.UpdatedAt = time.Now()
 }
 
 // Hash user password

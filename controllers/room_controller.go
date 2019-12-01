@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/sunaryaagung95/go-message-api/auth"
 	"github.com/sunaryaagung95/go-message-api/models"
 	"github.com/sunaryaagung95/go-message-api/responses"
 )
@@ -27,11 +28,13 @@ func (server *Server) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	if room.AdminID == 0 {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("admin_id is required"))
+	adminID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
-
+	room.AdminID = adminID
+	room.Prepare()
 	roomCreated, err := room.CreateRoom(server.DB)
 	if err != nil {
 		formattedError := formatError(err.Error())
@@ -74,12 +77,29 @@ func (server *Server) GetOneRoom(w http.ResponseWriter, r *http.Request) {
 // DeleteRoom func
 func (server *Server) DeleteRoom(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	room := models.Room{}
 	rid, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
+
+	room := models.Room{}
+	err = server.DB.Debug().Model(models.Room{}).Where("id = ?", rid).Take(&room).Error
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	adminID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if room.AdminID != adminID {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("You are not admin"))
+		return
+	}
+
 	_, err = room.DeleteRoom(server.DB, rid)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
