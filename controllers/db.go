@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" //postgres database driver
@@ -41,6 +42,9 @@ func (server *Server) ConnectDB(dbHost, dbPort, dbUser, dbName, dbPassword strin
 
 //Serve func
 func (server *Server) Serve(addr string) {
+	headers := handlers.AllowedHeaders([]string{"*"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
+	origins := handlers.AllowedMethods([]string{"*"})
 	fmt.Println("Listening to Port: 8080")
-	log.Fatal(http.ListenAndServe(":8080", server.Router))
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(server.Router)))
 }
