@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" //postgres database driver
-	"github.com/sunaryaagung/hello-world/models"
+	"github.com/sunaryaagung95/go-message-api/models"
 )
 
 //Server model

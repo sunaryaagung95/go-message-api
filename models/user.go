@@ -32,9 +32,22 @@ func (u *User) BeforeSave() error {
 	return nil
 }
 
+// CheckPassword func
+func CheckPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
 // Validate user cation
 func (u *User) Validate(action string) error {
 	switch strings.ToLower(action) {
+	case "login":
+		if u.Email == "" {
+			return errors.New("Email is required")
+		}
+		if u.Password == "" {
+			return errors.New("Password is required")
+		}
+		return nil
 	default:
 		if u.Name == "" {
 			return errors.New("Name is required")

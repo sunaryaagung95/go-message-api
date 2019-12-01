@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/sunaryaagung/hello-world/models"
-	"github.com/sunaryaagung/hello-world/responses"
+	"github.com/sunaryaagung95/go-message-api/models"
+	"github.com/sunaryaagung95/go-message-api/responses"
 )
 
 // GetAllUsers component

@@ -1,14 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"os"
 
-import "github.com/sunaryaagung/hello-world/controllers"
-
-import "github.com/joho/godotenv"
-
-import "log"
-
-import "os"
+	"github.com/joho/godotenv"
+	"github.com/sunaryaagung95/go-message-api/controllers"
+)
 
 var server = controllers.Server{}
 

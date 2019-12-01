@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/sunaryaagung/hello-world/responses"
+	"github.com/sunaryaagung95/go-message-api/responses"
 )
 
 //Home cont
