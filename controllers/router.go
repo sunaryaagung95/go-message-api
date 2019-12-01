@@ -9,5 +9,8 @@ func (s *Server) RunRouters() {
 
 	//User Route
 	s.Router.HandleFunc("/api/users", middlewares.SetJSON(s.GetAllUsers)).Methods("GET")
+	s.Router.HandleFunc("/api/users/{id}", middlewares.SetJSON(s.GetOneUser)).Methods("GET")
 	s.Router.HandleFunc("/api/users", middlewares.SetJSON(s.AddUser)).Methods("POST")
+	s.Router.HandleFunc("/api/users/{id}", middlewares.SetJSON(s.UpdateUser)).Methods("PUT")
+	s.Router.HandleFunc("/api/users/{id}", middlewares.SetJSON(s.DeleteUser)).Methods("DELETE")
 }

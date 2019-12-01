@@ -1,12 +1,13 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"errors"
+	"strings"
 
-import "strings"
-
-import "errors"
-
-import "github.com/badoux/checkmail"
+	"github.com/badoux/checkmail"
+	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
+)
 
 //User model
 type User struct {
@@ -16,21 +17,25 @@ type User struct {
 	Password string `gorm:"size:100;not null" json:"password"`
 }
 
-//GetAllUsers function
-func (u *User) GetAllUsers(db *gorm.DB) (*[]User, error) {
-	var err error
-	users := []User{}
-	err = db.Debug().Model(&User{}).Find(&users).Error
+// Hash user password
+func Hash(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}
+
+// BeforeSave func on gorm
+func (u *User) BeforeSave() error {
+	hashedPassword, err := Hash(u.Password)
 	if err != nil {
-		return &[]User{}, err
+		return err
 	}
-	return &users, err
+	u.Password = string(hashedPassword)
+	return nil
 }
 
 // Validate user cation
 func (u *User) Validate(action string) error {
 	switch strings.ToLower(action) {
-	case "add":
+	default:
 		if u.Name == "" {
 			return errors.New("Name is required")
 		}
@@ -44,8 +49,6 @@ func (u *User) Validate(action string) error {
 			return errors.New("Password is required")
 		}
 		return nil
-	default:
-		return nil
 	}
 }
 
@@ -58,4 +61,61 @@ func (u *User) AddUser(db *gorm.DB) (*User, error) {
 	}
 	return u, nil
 
+}
+
+//GetAllUsers function
+func (u *User) GetAllUsers(db *gorm.DB) (*[]User, error) {
+	var err error
+	users := []User{}
+	err = db.Debug().Model(&User{}).Find(&users).Error
+	if err != nil {
+		return &[]User{}, err
+	}
+	return &users, err
+}
+
+//GetOneUser function
+func (u *User) GetOneUser(db *gorm.DB, uid int) (*User, error) {
+	var err error
+	err = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return &User{}, errors.New("Not found")
+	}
+	return u, err
+}
+
+//DeteleUser func
+func (u *User) DeteleUser(db *gorm.DB, uid int) (int64, error) {
+	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
+	if db.Error != nil {
+		return 0, db.Error
+	}
+	return db.RowsAffected, nil
+}
+
+//UpdateUser func
+func (u *User) UpdateUser(db *gorm.DB, uid int) (*User, error) {
+	err := u.BeforeSave()
+	if err != nil {
+		return &User{}, err
+	}
+	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).UpdateColumns(
+		map[string]interface{}{
+			"name":     u.Name,
+			"email":    u.Email,
+			"password": u.Password,
+		},
+	)
+	if db.Error != nil {
+		return &User{}, err
+	}
+	//display updated data
+	err = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
+	return u, nil
 }
