@@ -21,9 +21,9 @@ func main() {
 
 	server.ConnectDB(
 		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_NAME"),
+		"5432",
+		"postgres",
+		"messenger",
 		os.Getenv("DB_PASSWORD"),
 	)
 	server.Serve(":8080")
