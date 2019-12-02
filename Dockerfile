@@ -25,7 +25,17 @@ RUN apk add --no-cache ca-certificates
 
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/server /server
-ENV PORT 8080
+
+ARG DB_HOST=default
+ARG API_SECRET=default
+ARG DB_PASSWORD=default
+
+
+ENV PORT=8080
+ENV DB_HOST=$DB_HOST
+ENV API_SECRET=$API_SECRET
+ENV DB_PASSWORD=$DB_PASSWORD
+
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
