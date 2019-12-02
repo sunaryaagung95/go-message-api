@@ -12,13 +12,10 @@ import (
 var server = controllers.Server{}
 
 func main() {
-	var err error
-	if os.Getenv("DB_HOST") == "" {
-		err = godotenv.Load()
-		if err != nil {
-			log.Fatalf("Can't load env:%s", err)
-		}
-		fmt.Println("Ger env values")
+	port := os.Getenv("PORT")
+	if port == "" {
+		loadEnv()
+		port = "8080"
 	}
 
 	server.ConnectDB(
@@ -28,10 +25,17 @@ func main() {
 		"messenger",
 		os.Getenv("DB_PASSWORD"),
 	)
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
 	log.Printf("Listening on localhost:%s", port)
 	server.Serve(fmt.Sprintf(":%s", port))
+}
+
+func loadEnv() {
+	if os.Getenv("DB_HOST") == "" {
+		var err error
+		err = godotenv.Load()
+		if err != nil {
+			log.Fatalf("Can't load env:%s", err)
+		}
+		fmt.Println("Ger env values")
+	}
 }
