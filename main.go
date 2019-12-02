@@ -36,6 +36,6 @@ func loadEnv() {
 		if err != nil {
 			log.Fatalf("Can't load env:%s", err)
 		}
-		fmt.Println("Ger env values")
+		fmt.Println("Get env values")
 	}
 }
