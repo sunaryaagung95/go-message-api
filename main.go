@@ -13,11 +13,13 @@ var server = controllers.Server{}
 
 func main() {
 	var err error
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Can't load env:%s", err)
+	if os.Getenv("DB_HOST") == "" {
+		err = godotenv.Load()
+		if err != nil {
+			log.Fatalf("Can't load env:%s", err)
+		}
+		fmt.Println("Ger env values")
 	}
-	fmt.Println("Ger env values")
 
 	server.ConnectDB(
 		os.Getenv("DB_HOST"),
